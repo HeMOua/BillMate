@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "billmate"
+version = "0.1.0"
+description = ""
+package-mode = false
+authors = ["HeMOu <fangqichenchao@163.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "^2.2.3"
+pdfplumber = "^0.11.4"
+
+
+[[tool.poetry.source]]
+name = "tsinghua"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+priority = "primary"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
