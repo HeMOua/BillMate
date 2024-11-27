@@ -1,30 +1,40 @@
-import datetime
 import pandas as pd
+from datetime import datetime
 from bill_parser.base import BillParserStrategy
 
-from utils import build_output_data_structure
+from utils import build_data_structure, find_table_start, detect_encoding
 
-__all__ = ['AlipayBillParser']
+__all__ = ["AlipayBillParser"]
 
 
 # 具体策略：解析支付宝账单
 class AlipayBillParser(BillParserStrategy):
 
-    
-
     def parse(self, file_path):
-        df = pd.read_csv(file_path, encoding='utf-8')
+        encoding = detect_encoding(file_path)
+        start_row = find_table_start(file_path, encoding=encoding)
+        df = pd.read_csv(
+            file_path, encoding=encoding, encoding_errors="ignore", skiprows=start_row
+        )
 
         # 定义目标数据框的结构
-        output_data = build_output_data_structure()
+        output_data = build_data_structure()
 
         # 遍历原始数据并填充目标数据
         for index, row in df.iterrows():
-            col_time = datetime.strptime(row["交易时间"], "%Y/%m/%d %H:%M").strftime("%Y-%m-%d %H:%M")
+            # 过滤无效数据
+            if row["收/支"] not in ["支出", "收入"]:
+                continue
+            # 解析原始数据
+            col_time = datetime.strptime(row["交易时间"], "%Y/%m/%d %H:%M").strftime(
+                "%Y-%m-%d %H:%M"
+            )
             col_type = "支出" if row["收/支"] == "支出" else "收入"
             col_category = row["交易分类"]
             col_subcategory = ""  # 子分类信息缺失，可手动填充
-            col_amount = -float(row["金额"]) if col_type == "支出" else float(row["金额"])
+            col_amount = (
+                -float(row["金额"]) if col_type == "支出" else float(row["金额"])
+            )
             col_ledger = "日常生活"  # 假设账本固定为“日常生活”，可根据实际分类逻辑修改
             col_fromaccount = row["收/付款方式"]
             col_toaccount = ""  # 暂无对应字段
