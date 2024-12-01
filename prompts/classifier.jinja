@@ -1,0 +1,14 @@
+请分析以下文本并从给定类别中选择最合适的一个：
+
+文本内容：{{ text }}
+
+可选类别：
+{% for category in categories %}
+- {{ category.name }}{% if category.description is defined and category.description %}: {{ category.description }}{% endif %}
+{% endfor %}
+- 其他: 不符合上述任何类别的内容
+
+要求：
+1. 仅返回类别名称
+2. 只可以返回可选类别中的一个
+3. 如果文本内容与所有已定义类别都不匹配，请返回"其他"

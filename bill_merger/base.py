@@ -18,11 +18,26 @@ class BillMerger:
 
     def merge_bills(self, bill_files: dict):
         """合并账单"""
-        merged_df = pd.DataFrame()
+        columns = ["账单时间", "类型", "分类", "子分类", "金额", "账本", "账户1", "账户2", "备注", "账单图片", "报销", "优惠", "标签", "成员"]
+        
+        wait_merge_data = []
         for bill_type, file_path in bill_files.items():
             parser = self.parsers.get(bill_type)
             if not parser:
                 raise ValueError(f"No parser registered for bill type: {bill_type}")
             bill_df = parser.parse(self.root_path / file_path)
-            merged_df = pd.concat([merged_df, bill_df], ignore_index=True)
+            # 确保所有列都存在,不存在的列填充空值
+            for col in columns:
+                if col not in bill_df.columns:
+                    bill_df[col] = None
+            # 只保留指定的列
+            bill_df = bill_df[columns]
+            wait_merge_data.append(bill_df)
+        
+        if not wait_merge_data:
+            raise ValueError("No data to merge")
+        
+        merged_df = pd.concat(wait_merge_data, ignore_index=True)
+        # 按账单时间升序排序
+        merged_df = merged_df.sort_values(by="账单时间", ascending=True)
         return merged_df

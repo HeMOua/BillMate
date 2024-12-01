@@ -1,14 +1,16 @@
 import chardet
-import yaml
+import json
+import multiprocessing as mp
 from pathlib import Path
-from typing import Literal
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Callable, Dict, Generator, List, Literal
 
 ROOT = Path(__file__).parent
 
 
-def load_yaml(path: Path):
+def load_json(path: Path):
     with open(path.resolve(), "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+        return json.load(f)
 
 
 def get_txt_content(file_path):
@@ -18,11 +20,15 @@ def get_txt_content(file_path):
 
 
 def get_categories(cate: Literal["支出", "收入"]):
-    config = load_yaml(ROOT / "categories.yaml")
-    if cate == "支出":
-        return config["expenditure"]
-    else:
-        return config["income"]
+    categories = load_json(ROOT / "categories.json")
+
+    def get_category_by_type(type: Literal["支出", "收入"]):
+        for category in categories:
+            if category["name"] == type:
+                return category["children"]
+        return []
+
+    return get_category_by_type(cate)
 
 
 # 构建数据结构
@@ -43,7 +49,7 @@ def build_data_structure(fields=None):
 
 
 # 获取文件数据第一行
-def find_table_start(file_path, encoding="utf-8"):
+def find_table_start(file_path):
     with open(file_path, "rb") as f:
         for i, line in enumerate(f):
             if "交易时间" in str(line):  # 根据某列名判断表头行
@@ -82,3 +88,26 @@ def find_table_start(file_path, encoding="auto", header_keyword="交易时间"):
         print(f"Error reading file: {e}")
 
     return -1
+
+
+def run_in_thread_pool(func: Callable, params: List[Dict]) -> Generator:
+    """
+    使用线程池并发执行函数。
+
+    Args:
+        func (Callable): 要并发执行的函数。
+        params (List[Dict]): 函数的参数列表。
+
+    Returns:
+        Generator: 函数执行结果的生成器。
+    """
+    max_workers = min(mp.cpu_count(), len(params))
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        tasks = [executor.submit(func, **param) for param in params]
+
+        for task in as_completed(tasks):
+            try:
+                yield task.result()
+            except Exception as e:
+                print(e)
