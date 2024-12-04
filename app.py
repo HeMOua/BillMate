@@ -2,7 +2,7 @@ from pathlib import Path
 from bill_parser import *
 from bill_merger.base import BillMerger
 from intelli_classifier.classifier import classify_consume_type
-from utils import get_categories
+from utils.general import get_categories
 
 
 ROOT = Path(__file__).parent
@@ -21,9 +21,9 @@ if __name__ == "__main__":
 
     # 提供文件路径
     bill_files = {
-        # "alipay": "alipay/alipay_record_20241111_123826.csv",
-        # "wechat": "wechat/微信支付账单(20240618-20240918).csv",
-        "icbc": "icbc/工商银行历史明细（申请单号：24111112531627610959）.pdf",
+        "alipay": "alipay/alipay_record_20241111_123826.csv",
+        "wechat": "wechat/微信支付账单(20240618-20240918).csv",
+        "icbc": "icbc/hisdetail1733316775379.csv",
     }
 
     # 合并账单
@@ -31,3 +31,5 @@ if __name__ == "__main__":
 
     # 保存合并后的账单
     merged_bill.to_excel(root_path / "merged_bill.xlsx", index=False)
+
+    print(f"账单合并完成，保存到 {root_path / 'merged_bill.xlsx'}")

@@ -3,7 +3,7 @@ from tqdm import tqdm
 from datetime import datetime
 from bill_parser.base import BillParserStrategy
 from intelli_classifier.classifier import classify_consume_type
-from utils import build_data_structure, find_table_start, detect_encoding, get_categories, run_in_thread_pool
+from utils.general import build_data_structure, find_table_start, detect_encoding, get_categories, run_in_thread_pool
 
 __all__ = ["AlipayBillParser"]
 
@@ -27,15 +27,13 @@ class AlipayBillParser(BillParserStrategy):
         return valid_rows
 
     def add_line(self, table_data, row):
-        cate, subcate = classify_consume_type(str(row), get_categories("支出"), True)
         
         # 解析原始数据
         col_time = datetime.strptime(row["交易时间"], "%Y-%m-%d %H:%M:%S").strftime(
             "%Y-%m-%d %H:%M"
         )
         col_type = "支出" if row["收/支"] == "支出" else "收入"
-        col_category = cate
-        col_subcategory = subcate
+        col_category, col_subcategory = classify_consume_type(str(row), get_categories(col_type), True)
         col_amount = (
             -float(row["金额"]) if col_type == "支出" else float(row["金额"])
         )

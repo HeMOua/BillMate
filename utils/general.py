@@ -5,7 +5,7 @@ from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Callable, Dict, Generator, List, Literal
 
-ROOT = Path(__file__).parent
+ROOT = Path(__file__).parents[1]
 
 
 def load_json(path: Path):
@@ -110,4 +110,4 @@ def run_in_thread_pool(func: Callable, params: List[Dict]) -> Generator:
             try:
                 yield task.result()
             except Exception as e:
-                print(e)
+                print(f"Error in thread pool: {e}")

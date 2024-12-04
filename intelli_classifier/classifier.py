@@ -3,7 +3,7 @@ from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import StrOutputParser
 from langchain_ollama.llms import OllamaLLM
 from jinja2 import Template
-from utils import ROOT, get_txt_content, get_categories
+from utils.general import ROOT, get_txt_content
 
 
 # 获取 Ollama 模型实例

@@ -22,6 +22,7 @@ class BillMerger:
         
         wait_merge_data = []
         for bill_type, file_path in bill_files.items():
+            # 获取解析策略
             parser = self.parsers.get(bill_type)
             if not parser:
                 raise ValueError(f"No parser registered for bill type: {bill_type}")
@@ -40,4 +41,5 @@ class BillMerger:
         merged_df = pd.concat(wait_merge_data, ignore_index=True)
         # 按账单时间升序排序
         merged_df = merged_df.sort_values(by="账单时间", ascending=True)
+        print(f"合并后的账单总记录数: {len(merged_df)}")
         return merged_df
