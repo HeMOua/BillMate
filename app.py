@@ -21,9 +21,9 @@ if __name__ == "__main__":
 
     # 提供文件路径
     bill_files = {
-        "alipay": "alipay/alipay_record_20241111_123826.csv",
-        "wechat": "wechat/微信支付账单(20240618-20240918).csv",
-        "icbc": "icbc/hisdetail1733316775379.csv",
+        "alipay": "alipay/alipay_record_20241205_220221.csv",
+        "wechat": "wechat/微信支付账单(20240621-20241130).csv",
+        "icbc": "icbc/hisdetail1733407445806.csv",
     }
 
     # 合并账单

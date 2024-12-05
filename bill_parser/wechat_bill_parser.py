@@ -29,13 +29,13 @@ class WeChatBillParser(BillParserStrategy):
     def add_line(self, table_data, row):
         
         # 解析原始数据
-        col_time = datetime.strptime(row["交易时间"], "%Y-%m-%d %H:%M:%S").strftime(
+        col_time = datetime.strptime(row["交易时间"], "%Y/%m/%d %H:%M").strftime(
             "%Y-%m-%d %H:%M"
         )
         col_type = "支出" if row["收/支"] == "支出" else "收入"
-        col_category, col_subcategory = classify_consume_type(str(row), get_categories(col_type), True)
+        col_category, col_subcategory = classify_consume_type(str(row), col_type)
         # 处理带有¥符号的金额字符串
-        amount_str = row["金额(元)"].replace("¥", "").strip()
+        amount_str = row["金额(元)"].replace("¥", "").replace(",", "").strip()
         col_amount = -float(amount_str) if col_type == "支出" else float(amount_str)
         col_ledger = "日常生活"  # 假设账本固定为"日常生活"，可根据实际分类逻辑修改
         col_fromaccount = "微信"  # row["支付方式"]

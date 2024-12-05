@@ -32,7 +32,7 @@ class ICBCBillParser(BillParserStrategy):
         # 解析原始数据
         col_time = datetime.strptime(row["交易日期"], "%Y-%m-%d").strftime("%Y-%m-%d %H:%M")
         col_type = "收入" if row["记账金额(收入)"] != '' else "支出"
-        col_category, col_subcategory = classify_consume_type(str(row), get_categories(col_type), True)
+        col_category, col_subcategory = classify_consume_type(str(row), col_type)
         col_amount = -float(row["记账金额(支出)"].replace(",", "")) if col_type == "支出" else float(row["记账金额(收入)"].replace(",", ""))
         col_ledger = "日常生活"
         col_fromaccount = "工商银行"

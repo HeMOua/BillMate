@@ -33,7 +33,7 @@ class AlipayBillParser(BillParserStrategy):
             "%Y-%m-%d %H:%M"
         )
         col_type = "支出" if row["收/支"] == "支出" else "收入"
-        col_category, col_subcategory = classify_consume_type(str(row), get_categories(col_type), True)
+        col_category, col_subcategory = classify_consume_type(str(row), col_type)
         col_amount = (
             -float(row["金额"]) if col_type == "支出" else float(row["金额"])
         )

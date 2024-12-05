@@ -20,7 +20,7 @@ def get_txt_content(file_path):
 
 
 def get_categories(cate: Literal["支出", "收入"]):
-    categories = load_json(ROOT / "categories.json")
+    categories = load_json(ROOT / "config/categories.json")
 
     def get_category_by_type(type: Literal["支出", "收入"]):
         for category in categories:
@@ -29,6 +29,11 @@ def get_categories(cate: Literal["支出", "收入"]):
         return []
 
     return get_category_by_type(cate)
+
+
+def get_special_cases(cate: Literal["支出", "收入"]):
+    special_cases = load_json(ROOT / "config/special_cases.json")
+    return special_cases[cate]
 
 
 # 构建数据结构
